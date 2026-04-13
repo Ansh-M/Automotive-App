@@ -48,14 +48,23 @@ Version Control	Git, GitHub
 
 Automotive-App-Kubernetes/
 │
+
 ├── Dockerfile
+
 ├── .dockerignore
+
 ├── README.md
+
 │
+
 ├── k8s/
+
 │   ├── deployment.yaml
+
 │   └── service.yaml
+
 │
+
 └── .github/
     └── workflows/
         └── deploy.yml
