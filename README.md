@@ -12,12 +12,19 @@ The key highlight of this project is zero-downtime Rolling Updates, ensuring tha
 
 ✨ Key Features
 ⚙️ Containerised Laravel application using Docker
+
 🔄 Zero-downtime Rolling Updates in Kubernetes
+
 🚀 CI/CD pipeline using GitHub Actions / Jenkins
+
 📦 Deployment on Minikube (local Kubernetes cluster)
+
 🌐 Kubernetes Service for external access
+
 ❤️ Health-check-based deployment strategy
+
 🔐 Secure credential management using secrets
+
 🛠️ Tech Stack
 
 Category	Technology
@@ -40,8 +47,9 @@ Automotive-App-Kubernetes/
 └── .github/
     └── workflows/
         └── deploy.yml
-⚙️ Prerequisites
 
+
+⚙️ Prerequisites
 Make sure you have the following installed:
 
 Docker
