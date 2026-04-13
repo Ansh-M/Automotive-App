@@ -19,6 +19,7 @@ The key highlight of this project is zero-downtime Rolling Updates, ensuring tha
 ❤️ Health-check-based deployment strategy
 🔐 Secure credential management using secrets
 🛠️ Tech Stack
+
 Category	Technology
 Application	PHP, Laravel
 Containerization	Docker
@@ -64,6 +65,7 @@ kubectl get pods
 kubectl get services
 Step 6 — Access the Application
 minikube service automotive-service
+
 🔄 CI/CD Pipeline Stages
 Stage 1 — Checkout
 Pull latest code from repository
@@ -115,9 +117,9 @@ Subject: DevOps
 👥 Team Members
 Sr No	Name	Enrollment Number
 01  Ameya Dole	        EN22CS301111
-02  Amishi Talwar	      EN22CS301112
+02  Amishi Talwar	    EN22CS301112
 03  Ansh Mundra	        EN22CS301142
-04  Anuj Devnani 	      EN22CS301164
+04  Anuj Devnani 	    EN22CS301164
 05  Arpith Shukla       EN22CS301203
   
 🏫 Institution
