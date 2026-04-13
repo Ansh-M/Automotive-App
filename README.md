@@ -2,6 +2,7 @@ Deploy Automotive App to Kubernetes
 
 A complete DevOps implementation for containerising and deploying an Automotive PHP Laravel Application onto a Kubernetes cluster (Minikube) using Docker and CI/CD pipelines with zero-downtime rolling updates.
 
+
 📌 Project Overview
 
 This project focuses on deploying a Laravel-based Automotive Web Application into a Kubernetes environment using Minikube.
@@ -9,6 +10,7 @@ This project focuses on deploying a Laravel-based Automotive Web Application int
 The entire workflow demonstrates how a traditional PHP application can be transformed into a containerised, scalable, and production-ready system.
 
 The key highlight of this project is zero-downtime Rolling Updates, ensuring that users never experience service interruption during deployments.
+
 
 ✨ Key Features
 
@@ -26,6 +28,7 @@ The key highlight of this project is zero-downtime Rolling Updates, ensuring tha
 
 🔐 Secure credential management using secrets
 
+
 🛠️ Tech Stack
 
 Category	Technology
@@ -42,6 +45,7 @@ Version Control	Git, GitHub
 
 
 📂 Project Structure
+
 Automotive-App-Kubernetes/
 │
 ├── Dockerfile
@@ -55,6 +59,7 @@ Automotive-App-Kubernetes/
 └── .github/
     └── workflows/
         └── deploy.yml
+
 
 
 ⚙️ Prerequisites
@@ -71,6 +76,7 @@ Git
 
 PHP & Composer (for Laravel setup)
 
+
 🚀 Deployment Steps
 
 Step 1 — Clone the Repository
@@ -79,13 +85,16 @@ git clone https://github.com/your-username/Automotive-App-Kubernetes.git
 
 cd Automotive-App-Kubernetes
 
+
 Step 2 — Start Minikube
 
 minikube start
 
+
 Step 3 — Build Docker Image
 
 docker build -t automotive-app:latest .
+
 
 Step 4 — Apply Kubernetes Manifests
 
@@ -93,15 +102,18 @@ kubectl apply -f k8s/deployment.yaml
 
 kubectl apply -f k8s/service.yaml
 
+
 Step 5 — Check Running Pods
 
 kubectl get pods
 
 kubectl get services
 
+
 Step 6 — Access the Application
 
 minikube service automotive-service
+
 
 
 🔄 CI/CD Pipeline Stages
@@ -110,21 +122,26 @@ Stage 1 — Checkout
 
 Pull latest code from repository
 
+
 Stage 2 — Build Docker Image
 
 Create container image of Laravel app
+
 
 Stage 3 — Push Image
 
 Push image to Docker Hub
 
+
 Stage 4 — Deploy to Kubernetes
 
 Apply deployment and service manifests
 
+
 Stage 5 — Verify Deployment
 
 Ensure pods are running and healthy
+
 
 
 ⚡ Zero-Downtime Rolling Updates
@@ -147,6 +164,7 @@ Application remains available at all times
 No service interruption during updates
 
 
+
 🔐 Secrets Configuration
 
 Store sensitive data securely:
@@ -162,6 +180,8 @@ Use:
 GitHub Secrets OR
 
 Kubernetes Secrets
+
+
 
 📈 Future Improvements
 
@@ -185,6 +205,7 @@ Project No: DO-16
 Subject: DevOps
 
 
+
 👥 Team Members
 
 Sr No	Name	Enrollment Number
@@ -200,6 +221,7 @@ Sr No	Name	Enrollment Number
 05  Arpith Shukla       EN22CS301203
   
 
+
 🏫 Institution
 
 Medicaps University
@@ -207,6 +229,7 @@ Medicaps University
 Datagami Skill-Based Course
 
 Academic Year: 2025–2026
+
 
 
 🙌 Mentor
