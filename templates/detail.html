@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ car.name }} — AutoVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080A0E;
+      --surface: #0F1218;
+      --card: #13161D;
+      --border: #1E2330;
+      --accent: #E8FF00;
+      --accent2: #FF4D00;
+      --text: #F0F2F5;
+      --muted: #5A6070;
+      --subtle: #2A2F3D;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+      background: rgba(8,10,14,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 4px;
+      color: var(--accent); text-decoration: none;
+    }
+    .nav-logo span { color: var(--text); }
+    .back-btn {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    .detail-wrapper {
+      padding: 100px 48px 80px;
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    .breadcrumb {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 40px;
+      opacity: 0; animation: fadeUp 0.5s ease 0.1s forwards;
+    }
+    .breadcrumb a { color: var(--accent); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .detail-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+      align-items: center;
+    }
+
+    .detail-visual {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 32px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+    .detail-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(232,255,0,0.04), transparent);
+    }
+    .detail-car-svg {
+      width: 100%; height: auto;
+      filter: drop-shadow(0 30px 50px rgba(0,0,0,0.6));
+      position: relative; z-index: 1;
+    }
+    .detail-badge {
+      position: absolute; top: 20px; left: 20px;
+      font-family: 'Space Mono', monospace; font-size: 10px;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 6px 12px; border-radius: 4px;
+      background: rgba(232,255,0,0.12);
+      color: var(--accent);
+      border: 1px solid rgba(232,255,0,0.25);
+    }
+    .detail-year {
+      position: absolute; bottom: 20px; right: 20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 72px; color: rgba(255,255,255,0.03);
+      line-height: 1; pointer-events: none;
+    }
+
+    .detail-info {
+      opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;
+    }
+    .detail-brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: var(--accent);
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .detail-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 5vw, 64px);
+      letter-spacing: 2px; line-height: 1;
+      margin-bottom: 16px;
+    }
+    .detail-desc {
+      font-size: 15px; color: var(--muted);
+      line-height: 1.8; margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-price-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .detail-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px; color: var(--accent);
+    }
+    .detail-price-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .fuel-pill {
+      padding: 8px 16px; border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .fuel-petrol { background: rgba(255,77,0,0.12); color: #FF8040; border: 1px solid rgba(255,77,0,0.25); }
+    .fuel-electric { background: rgba(0,200,255,0.12); color: #00C8FF; border: 1px solid rgba(0,200,255,0.25); }
+
+    .quick-specs {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
+    }
+    .qs-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      text-align: center;
+    }
+    .qs-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; letter-spacing: 1px;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .qs-key {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; color: var(--muted);
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+
+    /* FULL SPECS TABLE */
+    .specs-section {
+      opacity: 0; animation: fadeUp 0.6s ease 0.5s forwards;
+      margin-bottom: 48px;
+    }
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--accent);
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px; letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+    .specs-table {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .spec-row {
+      display: grid; grid-template-columns: 200px 1fr;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-row:hover { background: rgba(232,255,0,0.02); }
+    .spec-row-key {
+      padding: 16px 24px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: var(--muted);
+      letter-spacing: 1px; text-transform: uppercase;
+      border-right: 1px solid var(--border);
+    }
+    .spec-row-val {
+      padding: 16px 24px;
+      font-size: 14px; font-weight: 500;
+      color: var(--text);
+    }
+
+    /* BOOK TEST DRIVE SECTION */
+    .booking-section {
+      opacity: 0; animation: fadeUp 0.6s ease 0.65s forwards;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      position: relative; overflow: hidden;
+    }
+    .booking-section::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(232,255,0,0.05), transparent 70%);
+      pointer-events: none;
+    }
+    .booking-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-top: 24px;
+    }
+    .booking-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .booking-input:focus { border-color: var(--accent); }
+    .booking-input::placeholder { color: var(--muted); }
+    .booking-input.full { grid-column: 1/-1; }
+    .booking-btn {
+      grid-column: 1/-1;
+      padding: 16px;
+      background: var(--accent);
+      border: none; border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 3px;
+      color: var(--bg); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .booking-btn:hover { background: #d4e800; transform: translateY(-1px); }
+    .success-msg {
+      display: none;
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 20px;
+      background: rgba(232,255,0,0.08);
+      border: 1px solid rgba(232,255,0,0.2);
+      border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px; color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 100%;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 4px; color: var(--accent);
+    }
+    .footer-logo span { color: var(--muted); }
+    .footer-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: var(--muted); letter-spacing: 2px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .detail-hero { grid-template-columns: 1fr; }
+      .detail-wrapper { padding: 90px 20px 60px; }
+      nav { padding: 0 20px; }
+      .booking-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">AUTO<span>VERSE</span></a>
+  <a href="/" class="back-btn">← Back to Catalog</a>
+</nav>
+
+<div class="detail-wrapper">
+
+  <div class="breadcrumb">
+    <a href="/">Catalog</a> &nbsp;/&nbsp; {{ car.brand }} &nbsp;/&nbsp; {{ car.name }}
+  </div>
+
+  <div class="detail-hero">
+    <!-- VISUAL -->
+    <div class="detail-visual">
+      {% if car.category == 'Sports' %}
+      <svg class="detail-car-svg" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="250" cy="195" rx="220" ry="15" fill="rgba(0,0,0,0.5)"/>
+        <path d="M50 138 L100 88 L175 62 L325 62 L400 88 L450 138 L450 162 L50 162 Z" fill="#1C2A1C"/>
+        <path d="M125 88 L162 54 L338 54 L375 88 Z" fill="#152215"/>
+        <path d="M143 86 L168 58 L332 58 L357 86 Z" fill="rgba(100,200,100,0.07)" stroke="rgba(100,200,100,0.14)" stroke-width="1.5"/>
+        <rect x="105" y="148" width="78" height="18" rx="4" fill="#0A150A"/>
+        <rect x="317" y="148" width="78" height="18" rx="4" fill="#0A150A"/>
+        <circle cx="144" cy="168" r="24" fill="#111" stroke="#1a2a1a" stroke-width="2.5"/>
+        <circle cx="144" cy="168" r="14" fill="#1a2a1a" stroke="rgba(232,255,0,0.45)" stroke-width="2"/>
+        <circle cx="144" cy="168" r="5" fill="rgba(232,255,0,0.35)"/>
+        <circle cx="356" cy="168" r="24" fill="#111" stroke="#1a2a1a" stroke-width="2.5"/>
+        <circle cx="356" cy="168" r="14" fill="#1a2a1a" stroke="rgba(232,255,0,0.45)" stroke-width="2"/>
+        <circle cx="356" cy="168" r="5" fill="rgba(232,255,0,0.35)"/>
+        <path d="M50 138 L70 138" stroke="rgba(232,255,0,0.7)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M430 138 L450 138" stroke="rgba(255,100,0,0.6)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M190 88 L205 62" stroke="rgba(232,255,0,0.2)" stroke-width="1.5"/>
+        <path d="M310 88 L295 62" stroke="rgba(232,255,0,0.2)" stroke-width="1.5"/>
+      </svg>
+      {% elif car.category == 'Luxury' %}
+      <svg class="detail-car-svg" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="250" cy="196" rx="225" ry="14" fill="rgba(0,0,0,0.4)"/>
+        <path d="M38 140 L88 98 L163 72 L337 72 L412 98 L462 140 L462 163 L38 163 Z" fill="#1A1A2E"/>
+        <path d="M120 98 L152 65 L348 65 L380 98 Z" fill="#13132A"/>
+        <path d="M136 96 L162 70 L338 70 L364 96 Z" fill="rgba(192,160,96,0.06)" stroke="rgba(192,160,96,0.18)" stroke-width="1.5"/>
+        <rect x="95" y="150" width="82" height="17" rx="4" fill="#0D0D1E"/>
+        <rect x="323" y="150" width="82" height="17" rx="4" fill="#0D0D1E"/>
+        <circle cx="136" cy="168" r="24" fill="#111" stroke="#1e1e30" stroke-width="2.5"/>
+        <circle cx="136" cy="168" r="14" fill="#1a1a2a" stroke="rgba(192,160,96,0.45)" stroke-width="2"/>
+        <circle cx="136" cy="168" r="5" fill="rgba(192,160,96,0.35)"/>
+        <circle cx="364" cy="168" r="24" fill="#111" stroke="#1e1e30" stroke-width="2.5"/>
+        <circle cx="364" cy="168" r="14" fill="#1a1a2a" stroke="rgba(192,160,96,0.45)" stroke-width="2"/>
+        <circle cx="364" cy="168" r="5" fill="rgba(192,160,96,0.35)"/>
+        <path d="M38 140 L60 140" stroke="rgba(255,200,100,0.8)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M440 140 L462 140" stroke="rgba(255,80,0,0.5)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="95" y1="118" x2="405" y2="118" stroke="rgba(192,160,96,0.12)" stroke-width="1.5"/>
+      </svg>
+      {% elif car.category == 'Electric' %}
+      <svg class="detail-car-svg" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="250" cy="195" rx="220" ry="13" fill="rgba(0,200,255,0.04)"/>
+        <path d="M44 140 L98 90 L182 69 L318 69 L402 90 L456 140 L456 162 L44 162 Z" fill="#131C28"/>
+        <path d="M125 90 L160 60 L340 60 L375 90 Z" fill="#0E1820"/>
+        <path d="M141 88 L166 65 L334 65 L359 88 Z" fill="rgba(0,200,255,0.05)" stroke="rgba(0,200,255,0.17)" stroke-width="1.5"/>
+        <rect x="100" y="148" width="78" height="17" rx="4" fill="#0A1018"/>
+        <rect x="322" y="148" width="78" height="17" rx="4" fill="#0A1018"/>
+        <circle cx="139" cy="166" r="24" fill="#111" stroke="#162030" stroke-width="2.5"/>
+        <circle cx="139" cy="166" r="14" fill="#182030" stroke="rgba(0,200,255,0.45)" stroke-width="2"/>
+        <circle cx="139" cy="166" r="5" fill="rgba(0,200,255,0.35)"/>
+        <circle cx="361" cy="166" r="24" fill="#111" stroke="#162030" stroke-width="2.5"/>
+        <circle cx="361" cy="166" r="14" fill="#182030" stroke="rgba(0,200,255,0.45)" stroke-width="2"/>
+        <circle cx="361" cy="166" r="5" fill="rgba(0,200,255,0.35)"/>
+        <path d="M44 140 L64 140" stroke="rgba(0,200,255,0.9)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M436 140 L456 140" stroke="rgba(0,200,255,0.4)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M238 90 L246 74 L254 90 L248 90 L250 100 L242 84 L248 84 Z" fill="rgba(0,200,255,0.7)"/>
+      </svg>
+      {% elif car.category == 'SUV' %}
+      <svg class="detail-car-svg" viewBox="0 0 500 230" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="250" cy="202" rx="220" ry="15" fill="rgba(0,0,0,0.5)"/>
+        <path d="M44 158 L62 98 L138 65 L362 65 L438 98 L456 158 L456 182 L44 182 Z" fill="#1E1208"/>
+        <path d="M94 98 L119 60 L381 60 L406 98 Z" fill="#160D04"/>
+        <path d="M112 96 L135 65 L365 65 L388 96 Z" fill="rgba(255,128,64,0.05)" stroke="rgba(255,128,64,0.14)" stroke-width="1.5"/>
+        <rect x="82" y="168" width="88" height="18" rx="4" fill="#0F0804"/>
+        <rect x="330" y="168" width="88" height="18" rx="4" fill="#0F0804"/>
+        <circle cx="126" cy="188" r="26" fill="#111" stroke="#221408" stroke-width="2.5"/>
+        <circle cx="126" cy="188" r="15" fill="#1a1008" stroke="rgba(255,128,64,0.45)" stroke-width="2"/>
+        <circle cx="126" cy="188" r="6" fill="rgba(255,128,64,0.35)"/>
+        <circle cx="374" cy="188" r="26" fill="#111" stroke="#221408" stroke-width="2.5"/>
+        <circle cx="374" cy="188" r="15" fill="#1a1008" stroke="rgba(255,128,64,0.45)" stroke-width="2"/>
+        <circle cx="374" cy="188" r="6" fill="rgba(255,128,64,0.35)"/>
+        <path d="M44 158 L66 158" stroke="rgba(255,128,64,0.8)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M434 158 L456 158" stroke="rgba(255,80,0,0.5)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="62" y1="98" x2="438" y2="98" stroke="rgba(255,128,64,0.08)" stroke-width="2"/>
+      </svg>
+      {% else %}
+      <svg class="detail-car-svg" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="250" cy="196" rx="222" ry="14" fill="rgba(0,0,0,0.5)"/>
+        <path d="M32 142 L82 90 L163 65 L337 65 L418 90 L468 142 L468 165 L32 165 Z" fill="#0E1A2A"/>
+        <path d="M113 90 L148 58 L352 58 L387 90 Z" fill="#071018"/>
+        <path d="M130 88 L156 62 L344 62 L370 88 Z" fill="rgba(64,128,255,0.05)" stroke="rgba(64,128,255,0.16)" stroke-width="1.5"/>
+        <rect x="88" y="150" width="85" height="18" rx="4" fill="#070E18"/>
+        <rect x="327" y="150" width="85" height="18" rx="4" fill="#070E18"/>
+        <circle cx="130" cy="170" r="24" fill="#111" stroke="#182030" stroke-width="2.5"/>
+        <circle cx="130" cy="170" r="14" fill="#0E1828" stroke="rgba(64,128,255,0.45)" stroke-width="2"/>
+        <circle cx="130" cy="170" r="5.5" fill="rgba(64,128,255,0.35)"/>
+        <circle cx="370" cy="170" r="24" fill="#111" stroke="#182030" stroke-width="2.5"/>
+        <circle cx="370" cy="170" r="14" fill="#0E1828" stroke="rgba(64,128,255,0.45)" stroke-width="2"/>
+        <circle cx="370" cy="170" r="5.5" fill="rgba(64,128,255,0.35)"/>
+        <path d="M32 142 L56 142" stroke="rgba(64,128,255,0.9)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M444 142 L468 142" stroke="rgba(255,80,0,0.5)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      {% endif %}
+      <div class="detail-badge">{{ car.badge }}</div>
+      <div class="detail-year">{{ car.year }}</div>
+    </div>
+
+    <!-- INFO -->
+    <div class="detail-info">
+      <div class="detail-brand">{{ car.brand }} · {{ car.category }}</div>
+      <div class="detail-name">{{ car.name }}</div>
+      <div class="detail-desc">{{ car.description }}</div>
+      <div class="detail-price-row">
+        <div>
+          <div class="detail-price-label">Ex-Showroom Price</div>
+          <div class="detail-price">{{ car.price }}</div>
+        </div>
+        <span class="fuel-pill fuel-{{ car.fuel_type|lower }}">⚡ {{ car.fuel_type }}</span>
+      </div>
+      <div class="quick-specs">
+        <div class="qs-item">
+          <div class="qs-val">{{ car.horsepower.replace(' hp','') }}</div>
+          <div class="qs-key">Horsepower</div>
+        </div>
+        <div class="qs-item">
+          <div class="qs-val">{{ car.acceleration.split('(')[0].strip() }}</div>
+          <div class="qs-key">0–100 km/h</div>
+        </div>
+        <div class="qs-item">
+          <div class="qs-val">{{ car.top_speed.replace(' km/h','') }}</div>
+          <div class="qs-key">Top km/h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL SPECS -->
+  <div class="specs-section">
+    <div class="section-label">// TECHNICAL DATA</div>
+    <div class="section-title">FULL SPECIFICATIONS</div>
+    <div class="specs-table">
+      <div class="spec-row"><div class="spec-row-key">Engine</div><div class="spec-row-val">{{ car.engine }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Horsepower</div><div class="spec-row-val">{{ car.horsepower }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Torque</div><div class="spec-row-val">{{ car.torque }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Transmission</div><div class="spec-row-val">{{ car.transmission }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Drivetrain</div><div class="spec-row-val">{{ car.drivetrain }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Top Speed</div><div class="spec-row-val">{{ car.top_speed }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Acceleration</div><div class="spec-row-val">{{ car.acceleration }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Fuel Type</div><div class="spec-row-val">{{ car.fuel_type }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Color</div><div class="spec-row-val">{{ car.color }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Model Year</div><div class="spec-row-val">{{ car.year }}</div></div>
+      <div class="spec-row"><div class="spec-row-key">Price</div><div class="spec-row-val">{{ car.price }} (Ex-Showroom)</div></div>
+    </div>
+  </div>
+
+  <!-- BOOKING -->
+  <div class="booking-section">
+    <div class="section-label">// EXPERIENCE IT</div>
+    <div class="section-title">BOOK A TEST DRIVE</div>
+    <div class="booking-grid" id="bookingForm">
+      <input class="booking-input" type="text" placeholder="Your Full Name" id="bName">
+      <input class="booking-input" type="email" placeholder="Email Address" id="bEmail">
+      <input class="booking-input" type="tel" placeholder="Phone Number" id="bPhone">
+      <input class="booking-input" type="date" id="bDate">
+      <input class="booking-input full" type="text" placeholder="Preferred Location / Dealership" id="bLocation" value="">
+      <button class="booking-btn" onclick="submitBooking()">SCHEDULE TEST DRIVE</button>
+      <div class="success-msg" id="successMsg">
+        ✓ &nbsp;Your test drive for {{ car.name }} has been scheduled. We'll confirm shortly.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">AUTO<span>VERSE</span></div>
+  <div class="footer-tag">// DEVOPS PROJECT — DO-16 · GROUP 04D2</div>
+</footer>
+
+<script>
+  function submitBooking() {
+    const name = document.getElementById('bName').value;
+    const email = document.getElementById('bEmail').value;
+    if (!name || !email) {
+      alert('Please fill in at least your name and email.');
+      return;
+    }
+    document.querySelector('.booking-btn').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AutoVerse — Precision Engineered</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080A0E;
+      --surface: #0F1218;
+      --card: #13161D;
+      --border: #1E2330;
+      --accent: #E8FF00;
+      --accent2: #FF4D00;
+      --text: #F0F2F5;
+      --muted: #5A6070;
+      --subtle: #2A2F3D;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(8,10,14,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text); }
+    .nav-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 50%, rgba(232,255,0,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,77,0,0.06) 0%, transparent 50%);
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(30,35,48,0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30,35,48,0.4) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 10vw, 140px);
+      line-height: 0.92;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.35s forwards;
+    }
+    .hero-title .line2 { color: var(--accent); }
+    .hero-title .line3 { 
+      -webkit-text-stroke: 1px rgba(240,242,245,0.3);
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.5s forwards;
+    }
+
+    .hero-stats {
+      display: flex; gap: 48px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.65s forwards;
+    }
+    .stat-item {}
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 40px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .scroll-hint {
+      position: absolute; bottom: 40px; left: 48px;
+      display: flex; align-items: center; gap: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 1s forwards;
+    }
+    .scroll-line {
+      width: 40px; height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    /* CATALOG SECTION */
+    .catalog {
+      padding: 100px 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 5vw, 56px);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    /* SEARCH & FILTER */
+    .controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+    }
+    .search-box input {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 20px 12px 44px;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      width: 260px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus { border-color: var(--accent); }
+    .search-box input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 16px;
+    }
+
+    .filter-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+    }
+
+    /* CAR GRID */
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .car-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+      position: relative;
+    }
+    .car-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(232,255,0,0.08);
+    }
+    .car-card:hover .card-arrow { transform: translate(4px, -4px); }
+
+    .card-visual {
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-car-svg {
+      width: 85%;
+      height: auto;
+      transition: transform 0.4s ease;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+    }
+    .car-card:hover .card-car-svg { transform: scale(1.05) translateY(-4px); }
+
+    .card-visual-bg {
+      position: absolute; inset: 0;
+      transition: opacity 0.3s;
+    }
+    .car-card:hover .card-visual-bg { opacity: 1; }
+
+    .card-badge {
+      position: absolute; top: 16px; left: 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 4px;
+      background: rgba(232,255,0,0.15);
+      color: var(--accent);
+      border: 1px solid rgba(232,255,0,0.3);
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    .card-brand {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 1px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .card-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .spec-item {}
+    .spec-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+    .spec-key {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .card-arrow {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+    .car-card:hover .card-arrow {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(232,255,0,0.08);
+    }
+
+    /* FUEL TYPE TAG */
+    .fuel-tag {
+      position: absolute; bottom: 16px; right: 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .fuel-petrol { background: rgba(255,77,0,0.15); color: #FF8040; border: 1px solid rgba(255,77,0,0.3); }
+    .fuel-electric { background: rgba(0,200,255,0.15); color: #00C8FF; border: 1px solid rgba(0,200,255,0.3); }
+
+    /* NO RESULTS */
+    .no-results {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 80px 0;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+      display: none;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: var(--accent);
+    }
+    .footer-logo span { color: var(--muted); }
+    .footer-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .car-card {
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    /* SVG CAR COLORS by category */
+    .car-sports { --car-body: #1a3a1a; --car-roof: #0f2a0f; --car-detail: #E8FF00; }
+    .car-luxury  { --car-body: #1a1a2e; --car-roof: #0f0f1e; --car-detail: #C0A060; }
+    .car-electric{ --car-body: #1a2535; --car-roof: #0f1825; --car-detail: #00C8FF; }
+    .car-suv     { --car-body: #2a1a0e; --car-roof: #1e0f06; --car-detail: #FF8040; }
+    .car-muscle  { --car-body: #0e1a2a; --car-roof: #061018; --car-detail: #4080FF; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">AUTO<span>VERSE</span></a>
+  <span class="nav-tag">// PRECISION ENGINEERED</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">// AUTOMOTIVE INTELLIGENCE PLATFORM</div>
+  <h1 class="hero-title">
+    <div>FIND YOUR</div>
+    <div class="line2">PERFECT</div>
+    <div class="line3">MACHINE</div>
+  </h1>
+  <p class="hero-sub">Curated performance vehicles, precision specs, and engineering excellence — all in one place.</p>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">{{ cars|length }}</div>
+      <div class="stat-label">Vehicles Listed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">6+</div>
+      <div class="stat-label">Brands</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Categories</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll to explore</span>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section class="catalog" id="catalog">
+  <div class="section-header">
+    <div>
+      <div class="section-label">// CATALOG</div>
+      <h2 class="section-title">ALL VEHICLES</h2>
+    </div>
+    <div class="controls">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="Search brand or model..." oninput="filterCars()">
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-btn active" onclick="setFilter('All', this)">All</button>
+        {% for cat in categories %}
+        <button class="filter-btn" onclick="setFilter('{{ cat }}', this)">{{ cat }}</button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="cars-grid" id="carsGrid">
+    {% for car in cars %}
+    <a href="/car/{{ car.id }}" class="car-card car-{{ car.category|lower }}"
+       data-category="{{ car.category }}"
+       data-name="{{ car.name|lower }}"
+       data-brand="{{ car.brand|lower }}"
+       style="animation-delay: {{ loop.index0 * 0.07 }}s">
+
+      <div class="card-visual">
+        <!-- Unique SVG per category -->
+        {% if car.category == 'Sports' %}
+        <svg class="card-car-svg" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="200" cy="155" rx="180" ry="12" fill="rgba(0,0,0,0.4)"/>
+          <path d="M40 110 L80 70 L140 50 L260 50 L320 70 L360 110 L360 130 L40 130 Z" fill="#1C2A1C"/>
+          <path d="M100 70 L130 42 L270 42 L300 70 Z" fill="#152215"/>
+          <path d="M115 68 L135 46 L265 46 L285 68 Z" fill="rgba(100,200,100,0.08)" stroke="rgba(100,200,100,0.15)" stroke-width="1"/>
+          <rect x="85" y="118" width="60" height="14" rx="3" fill="#0A150A"/>
+          <rect x="255" y="118" width="60" height="14" rx="3" fill="#0A150A"/>
+          <circle cx="115" cy="135" r="18" fill="#111" stroke="#222" stroke-width="2"/>
+          <circle cx="115" cy="135" r="10" fill="#1a1a1a" stroke="rgba(232,255,0,0.4)" stroke-width="1.5"/>
+          <circle cx="115" cy="135" r="4" fill="rgba(232,255,0,0.3)"/>
+          <circle cx="285" cy="135" r="18" fill="#111" stroke="#222" stroke-width="2"/>
+          <circle cx="285" cy="135" r="10" fill="#1a1a1a" stroke="rgba(232,255,0,0.4)" stroke-width="1.5"/>
+          <circle cx="285" cy="135" r="4" fill="rgba(232,255,0,0.3)"/>
+          <path d="M40 110 L55 110" stroke="rgba(232,255,0,0.6)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M345 110 L360 110" stroke="rgba(255,100,0,0.5)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M150 70 L160 50" stroke="rgba(232,255,0,0.2)" stroke-width="1"/>
+          <path d="M250 70 L240 50" stroke="rgba(232,255,0,0.2)" stroke-width="1"/>
+        </svg>
+        {% elif car.category == 'Luxury' %}
+        <svg class="card-car-svg" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="200" cy="155" rx="185" ry="12" fill="rgba(0,0,0,0.4)"/>
+          <path d="M30 115 L70 80 L130 58 L270 58 L330 80 L370 115 L370 132 L30 132 Z" fill="#1A1A2E"/>
+          <path d="M95 78 L120 52 L280 52 L305 78 Z" fill="#13132A"/>
+          <path d="M108 76 L128 56 L272 56 L292 76 Z" fill="rgba(192,160,96,0.07)" stroke="rgba(192,160,96,0.2)" stroke-width="1"/>
+          <rect x="75" y="120" width="65" height="14" rx="3" fill="#0D0D1E"/>
+          <rect x="260" y="120" width="65" height="14" rx="3" fill="#0D0D1E"/>
+          <circle cx="108" cy="137" r="18" fill="#111" stroke="#1e1e30" stroke-width="2"/>
+          <circle cx="108" cy="137" r="10" fill="#1a1a2a" stroke="rgba(192,160,96,0.4)" stroke-width="1.5"/>
+          <circle cx="108" cy="137" r="4" fill="rgba(192,160,96,0.3)"/>
+          <circle cx="292" cy="137" r="18" fill="#111" stroke="#1e1e30" stroke-width="2"/>
+          <circle cx="292" cy="137" r="10" fill="#1a1a2a" stroke="rgba(192,160,96,0.4)" stroke-width="1.5"/>
+          <circle cx="292" cy="137" r="4" fill="rgba(192,160,96,0.3)"/>
+          <path d="M30 115 L48 115" stroke="rgba(255,200,100,0.7)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M352 115 L370 115" stroke="rgba(255,80,0,0.5)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="80" y1="95" x2="320" y2="95" stroke="rgba(192,160,96,0.15)" stroke-width="1"/>
+        </svg>
+        {% elif car.category == 'Electric' %}
+        <svg class="card-car-svg" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="200" cy="155" rx="182" ry="11" fill="rgba(0,200,255,0.05)"/>
+          <path d="M35 112 L78 72 L145 55 L255 55 L322 72 L365 112 L365 130 L35 130 Z" fill="#131C28"/>
+          <path d="M100 72 L128 48 L272 48 L300 72 Z" fill="#0E1820"/>
+          <path d="M113 70 L133 52 L267 52 L287 70 Z" fill="rgba(0,200,255,0.06)" stroke="rgba(0,200,255,0.18)" stroke-width="1"/>
+          <rect x="80" y="118" width="62" height="14" rx="3" fill="#0A1018"/>
+          <rect x="258" y="118" width="62" height="14" rx="3" fill="#0A1018"/>
+          <circle cx="111" cy="135" r="18" fill="#111" stroke="#162030" stroke-width="2"/>
+          <circle cx="111" cy="135" r="10" fill="#182030" stroke="rgba(0,200,255,0.4)" stroke-width="1.5"/>
+          <circle cx="111" cy="135" r="4" fill="rgba(0,200,255,0.3)"/>
+          <circle cx="289" cy="135" r="18" fill="#111" stroke="#162030" stroke-width="2"/>
+          <circle cx="289" cy="135" r="10" fill="#182030" stroke="rgba(0,200,255,0.4)" stroke-width="1.5"/>
+          <circle cx="289" cy="135" r="4" fill="rgba(0,200,255,0.3)"/>
+          <path d="M35 112 L52 112" stroke="rgba(0,200,255,0.8)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M348 112 L365 112" stroke="rgba(0,200,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M190 72 L196 60 L202 72 L198 72 L200 80 L194 68 L198 68 Z" fill="rgba(0,200,255,0.6)"/>
+        </svg>
+        {% elif car.category == 'SUV' %}
+        <svg class="card-car-svg" viewBox="0 0 400 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="200" cy="162" rx="180" ry="13" fill="rgba(0,0,0,0.4)"/>
+          <path d="M35 128 L50 78 L110 52 L290 52 L350 78 L365 128 L365 148 L35 148 Z" fill="#1E1208"/>
+          <path d="M75 78 L95 48 L305 48 L325 78 Z" fill="#160D04"/>
+          <path d="M90 76 L108 52 L292 52 L310 76 Z" fill="rgba(255,128,64,0.06)" stroke="rgba(255,128,64,0.15)" stroke-width="1"/>
+          <rect x="65" y="135" width="70" height="16" rx="3" fill="#0F0804"/>
+          <rect x="265" y="135" width="70" height="16" rx="3" fill="#0F0804"/>
+          <circle cx="100" cy="151" r="20" fill="#111" stroke="#221408" stroke-width="2"/>
+          <circle cx="100" cy="151" r="12" fill="#1a1008" stroke="rgba(255,128,64,0.4)" stroke-width="1.5"/>
+          <circle cx="100" cy="151" r="5" fill="rgba(255,128,64,0.3)"/>
+          <circle cx="300" cy="151" r="20" fill="#111" stroke="#221408" stroke-width="2"/>
+          <circle cx="300" cy="151" r="12" fill="#1a1008" stroke="rgba(255,128,64,0.4)" stroke-width="1.5"/>
+          <circle cx="300" cy="151" r="5" fill="rgba(255,128,64,0.3)"/>
+          <path d="M35 128 L52 128" stroke="rgba(255,128,64,0.7)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M348 128 L365 128" stroke="rgba(255,80,0,0.5)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="50" y1="78" x2="350" y2="78" stroke="rgba(255,128,64,0.1)" stroke-width="1.5"/>
+        </svg>
+        {% else %}
+        <svg class="card-car-svg" viewBox="0 0 400 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="200" cy="155" rx="182" ry="12" fill="rgba(0,0,0,0.4)"/>
+          <path d="M25 115 L65 72 L130 52 L270 52 L335 72 L375 115 L375 133 L25 133 Z" fill="#0E1A2A"/>
+          <path d="M90 72 L118 46 L282 46 L310 72 Z" fill="#071018"/>
+          <path d="M104 70 L125 50 L275 50 L296 70 Z" fill="rgba(64,128,255,0.06)" stroke="rgba(64,128,255,0.18)" stroke-width="1"/>
+          <rect x="70" y="120" width="68" height="15" rx="3" fill="#070E18"/>
+          <rect x="262" y="120" width="68" height="15" rx="3" fill="#070E18"/>
+          <circle cx="104" cy="137" r="19" fill="#111" stroke="#182030" stroke-width="2"/>
+          <circle cx="104" cy="137" r="11" fill="#0E1828" stroke="rgba(64,128,255,0.4)" stroke-width="1.5"/>
+          <circle cx="104" cy="137" r="4.5" fill="rgba(64,128,255,0.3)"/>
+          <circle cx="296" cy="137" r="19" fill="#111" stroke="#182030" stroke-width="2"/>
+          <circle cx="296" cy="137" r="11" fill="#0E1828" stroke="rgba(64,128,255,0.4)" stroke-width="1.5"/>
+          <circle cx="296" cy="137" r="4.5" fill="rgba(64,128,255,0.3)"/>
+          <path d="M25 115 L44 115" stroke="rgba(64,128,255,0.8)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M356 115 L375 115" stroke="rgba(255,80,0,0.5)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M355 95 L375 115 L355 115" fill="rgba(255,80,0,0.15)" stroke="none"/>
+        </svg>
+        {% endif %}
+
+        <span class="card-badge">{{ car.badge }}</span>
+        <span class="fuel-tag fuel-{{ car.fuel_type|lower }}">{{ car.fuel_type }}</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-brand">{{ car.brand }}</div>
+        <div class="card-name">{{ car.name }}</div>
+        <div class="card-desc">{{ car.description }}</div>
+        <div class="card-specs">
+          <div class="spec-item">
+            <div class="spec-val">{{ car.horsepower.replace(' hp','') }}</div>
+            <div class="spec-key">Horsepower</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-val">{{ car.acceleration.split('(')[0].strip() }}</div>
+            <div class="spec-key">0–100 km/h</div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-val">{{ car.top_speed.replace(' km/h','') }}</div>
+            <div class="spec-key">Top Speed</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-price">{{ car.price }}</div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+    <div class="no-results" id="noResults">No vehicles match your search.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">AUTO<span>VERSE</span></div>
+  <div class="footer-tag">// DEVOPS PROJECT — DO-16 · GROUP 04D2</div>
+</footer>
+
+<script>
+  let activeFilter = 'All';
+
+  function setFilter(cat, btn) {
+    activeFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCars();
+  }
+
+  function filterCars() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.car-card');
+    let visible = 0;
+
+    cards.forEach((card, i) => {
+      const catMatch = activeFilter === 'All' || card.dataset.category === activeFilter;
+      const searchMatch = !search || card.dataset.name.includes(search) || card.dataset.brand.includes(search);
+      const show = catMatch && searchMatch;
+      card.style.display = show ? 'block' : 'none';
+      if (show) {
+        card.style.animationDelay = (visible * 0.06) + 's';
+        card.style.opacity = '0';
+        card.style.animation = 'none';
+        setTimeout(() => {
+          card.style.animation = 'fadeUp 0.4s ease forwards';
+        }, 10);
+        visible++;
+      }
+    });
+
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+  }
+</script>
+</body>
+</html>
