@@ -1,235 +1,141 @@
-Deploy Automotive App to Kubernetes
+# AutoVerse 🚗
+### DevOps Project DO-16 | Group 04D2 | Division D2
 
-A complete DevOps implementation for containerising and deploying an Automotive PHP Laravel Application onto a Kubernetes cluster (Minikube) using Docker and CI/CD pipelines with zero-downtime rolling updates.
+A lightweight automotive car showcase web app built with **Python Flask**, containerized with **Docker**, designed for Kubernetes deployment.
 
+---
 
-Project Overview
+## 📌 Overview  
 
-This project focuses on deploying a Laravel-based Automotive Web Application into a Kubernetes environment using Minikube.
+This project showcases a car showcase web application with modern DevOps practices including containerization and deployment readiness.
 
-The entire workflow demonstrates how a traditional PHP application can be transformed into a containerised, scalable, and production-ready system.
+💡 **Key Highlight:**  
+Lightweight app with clean UI and API support for car catalog browsing.
 
-The key highlight of this project is zero-downtime Rolling Updates, ensuring that users never experience service interruption during deployments.
+---
 
+## ✨ Features  
 
-Key Features
+- Car Catalog with multiple categories  
+- Search & Filter functionality  
+- Car Detail Page with booking option  
+- REST API support  
+- Dockerized Application  
+- Ready for Kubernetes deployment  
 
-Containerised Laravel application using Docker
+---
 
-Zero-downtime Rolling Updates in Kubernetes
+## 🛠️ Tech Stack  
 
-CI/CD pipeline using GitHub Actions / Jenkins
+| Category | Technology |
+|----------|-----------|
+| Application | Python, Flask |
+| Containerization | Docker |
+| Orchestration | Kubernetes (Minikube) |
+| CI/CD | GitHub Actions / Jenkins |
+| Version Control | Git, GitHub |
 
-Deployment on Minikube (local Kubernetes cluster)
+---
 
-Kubernetes Service for external access
+## 🗂️ Project Structure  
 
-Health-check-based deployment strategy
+```
+autoverse/
+├── app.py
+├── requirements.txt
+├── Dockerfile
+├── .dockerignore
+├── templates/
+│   ├── index.html
+│   └── detail.html
+└── README.md
+```
 
-Secure credential management using secrets
+---
 
+## ⚙️ Prerequisites  
 
-Tech Stack
+- Python 3.11+  
+- pip  
+- Docker  
+- Git  
 
-Category	Technology
+---
 
-Application	PHP, Laravel
+## 🚀 Deployment Guide  
 
-Containerization	Docker
+### 1️⃣ Clone the Repository  
+git clone <your-repo-url>  
+cd autoverse  
 
-Orchestration	Kubernetes (Minikube)
+### 2️⃣ Run Locally  
+pip install -r requirements.txt  
+python app.py  
 
-CI/CD	GitHub Actions / Jenkins
+### 3️⃣ Run with Docker  
+docker build -t autoverse:v1 .  
+docker run -d -p 5000:5000 autoverse:v1  
 
-Version Control	Git, GitHub
+---
 
+## 🔄 CI/CD Pipeline  
 
-Project Structure
+- Checkout Code  
+- Build Docker Image  
+- Push to Docker Hub  
+- Deploy to Kubernetes  
 
-Automotive-App-Kubernetes/
+---
 
+## ⚡ Zero-Downtime Strategy  
 
-Dockerfile
+replicas: 2  
+maxSurge: 1  
+maxUnavailable: 0  
 
-dockerignore
+---
 
-README.md
+## 🔐 Secrets Management  
 
- k8s
+- Environment Variables  
+- Secure API handling  
 
-deployment.yaml
+---
 
-service.yaml
+## 📈 Future Enhancements  
 
-github
-workflows
-deploy.yml
+- Add authentication  
+- Improve UI/UX  
+- Deploy on cloud  
+- Add monitoring tools  
 
-Prerequisites
+---
 
-Make sure you have the following installed:
+## 👨‍💻 Project Info  
 
-Docker
+- Division: D2  
+- Group: 04D2  
+- Project No: DO-16  
+- Subject: DevOps  
 
-Minikube
+---
 
-kubectl
+## 👥 Team Members  
 
-Git
+- Ameya Dole
+- Amishi Talwar  
+- Ansh Mundra  
+- Anuj Devnani  
+- Arpith Shukla  
 
-PHP & Composer (for Laravel setup)
+---
 
-Deployment Steps
+## 🏫 Institution  
 
-Step 1 — Clone the Repository
+Medicaps University  
 
-git clone https://github.com/your-username/Automotive-App-Kubernetes.git
+---
 
-cd Automotive-App-Kubernetes
+## 🙌 Mentor  
 
-
-Step 2 — Start Minikube
-
-minikube start
-
-
-Step 3 — Build Docker Image
-
-docker build -t automotive-app:latest .
-
-
-Step 4 — Apply Kubernetes Manifests
-
-kubectl apply -f k8s/deployment.yaml
-
-kubectl apply -f k8s/service.yaml
-
-
-Step 5 — Check Running Pods
-
-kubectl get pods
-
-kubectl get services
-
-
-Step 6 — Access the Application
-
-minikube service automotive-service
-
-
-CI/CD Pipeline Stages
-
-Stage 1 — Checkout
-
-Pull latest code from repository
-
-
-Stage 2 — Build Docker Image
-
-Create container image of Laravel app
-
-
-Stage 3 — Push Image
-
-Push image to Docker Hub
-
-
-Stage 4 — Deploy to Kubernetes
-
-Apply deployment and service manifests
-
-
-Stage 5 — Verify Deployment
-
-Ensure pods are running and healthy
-
-
-Zero-Downtime Rolling Updates
-
-The deployment uses a Kubernetes rolling update strategy:
-
-replicas: 2
-
-maxSurge: 1
-
-maxUnavailable: 0
-
-
-This ensures:
-
-New pods are created before old ones are removed
-
-Application remains available at all times
-
-No service interruption during updates
-
-Secrets Configuration
-
-Store sensitive data securely:
-
-Docker credentials
-
-Kubernetes configs
-
-API keys
-
-Use:
-
-GitHub Secrets OR
-
-Kubernetes Secrets
-
-
-
-Future Improvements
-
-Add Horizontal Pod Autoscaling
-
-Integrate monitoring (Prometheus & Grafana)
-
-Implement HTTPS with Ingress
-
-Deploy on cloud (AWS EKS / GCP GKE)
-
-Project Details
-
-
-Division: D2
-
-Group: 04D2
-
-Project No: DO-16
-
-Subject: DevOps
-
-
-
-Team Members
-
-Sr No	Name	Enrollment Number
-
-01  Ameya Dole	        EN22CS301111
-
-02  Amishi Talwar	    EN22CS301112
-
-03  Ansh Mundra	        EN22CS301142
-
-04  Anuj Devnani 	    EN22CS301164
-
-05  Arpith Shukla       EN22CS301203
-  
-
-
-Institution
-
-Medicaps University
-
-Datagami Skill-Based Course
-
-Academic Year: 2025–2026
-
-
-
-🙌 Mentor
-
-Prof. Akshay Saxena
+Prof. Akshay Saxena  
