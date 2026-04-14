@@ -65,7 +65,7 @@ autoverse/
 ## 🚀 Deployment Guide  
 
 ### 1️⃣ Clone the Repository  
-git clone <your-repo-url>  
+git clone "https://github.com/Ansh-M/Automotive-App.git"  
 cd autoverse  
 
 ### 2️⃣ Run Locally  
@@ -122,11 +122,11 @@ maxUnavailable: 0
 
 ## 👥 Team Members  
 
-- Ameya Dole  
-- Amishi Talwar  
-- Ansh Mundra  
-- Anuj Devnani  
-- Arpith Shukla  
+- Ameya Dole    -  EN22CS301111
+- Amishi Talwar -  EN22CS301112 
+- Ansh Mundra   -  EN22CS301142  
+- Anuj Devnani  -  EN22CS301164 
+- Arpith Shukla -  EN22CS301203 
 
 ---
 
