@@ -3,7 +3,7 @@ Deploy Automotive App to Kubernetes
 A complete DevOps implementation for containerising and deploying an Automotive PHP Laravel Application onto a Kubernetes cluster (Minikube) using Docker and CI/CD pipelines with zero-downtime rolling updates.
 
 
-📌 Project Overview
+Project Overview
 
 This project focuses on deploying a Laravel-based Automotive Web Application into a Kubernetes environment using Minikube.
 
@@ -12,24 +12,24 @@ The entire workflow demonstrates how a traditional PHP application can be transf
 The key highlight of this project is zero-downtime Rolling Updates, ensuring that users never experience service interruption during deployments.
 
 
-✨ Key Features
+Key Features
 
-⚙️ Containerised Laravel application using Docker
+Containerised Laravel application using Docker
 
-🔄 Zero-downtime Rolling Updates in Kubernetes
+Zero-downtime Rolling Updates in Kubernetes
 
-🚀 CI/CD pipeline using GitHub Actions / Jenkins
+CI/CD pipeline using GitHub Actions / Jenkins
 
-📦 Deployment on Minikube (local Kubernetes cluster)
+Deployment on Minikube (local Kubernetes cluster)
 
-🌐 Kubernetes Service for external access
+Kubernetes Service for external access
 
-❤️ Health-check-based deployment strategy
+Health-check-based deployment strategy
 
-🔐 Secure credential management using secrets
+Secure credential management using secrets
 
 
-🛠️ Tech Stack
+Tech Stack
 
 Category	Technology
 
@@ -44,34 +44,28 @@ CI/CD	GitHub Actions / Jenkins
 Version Control	Git, GitHub
 
 
-📂 Project Structure
+Project Structure
 
 Automotive-App-Kubernetes/
-│
-
-├── Dockerfile
-
-├── .dockerignore
-
-├── README.md
-
-│
-
-├── k8s/
-
-│   ├── deployment.yaml
-
-│   └── service.yaml
-
-│
-
-└── .github/
-    └── workflows/
-        └── deploy.yml
 
 
+Dockerfile
 
-⚙️ Prerequisites
+dockerignore
+
+README.md
+
+ k8s
+
+deployment.yaml
+
+service.yaml
+
+github
+workflows
+deploy.yml
+
+Prerequisites
 
 Make sure you have the following installed:
 
@@ -85,8 +79,7 @@ Git
 
 PHP & Composer (for Laravel setup)
 
-
-🚀 Deployment Steps
+Deployment Steps
 
 Step 1 — Clone the Repository
 
@@ -124,8 +117,7 @@ Step 6 — Access the Application
 minikube service automotive-service
 
 
-
-🔄 CI/CD Pipeline Stages
+CI/CD Pipeline Stages
 
 Stage 1 — Checkout
 
@@ -152,8 +144,7 @@ Stage 5 — Verify Deployment
 Ensure pods are running and healthy
 
 
-
-⚡ Zero-Downtime Rolling Updates
+Zero-Downtime Rolling Updates
 
 The deployment uses a Kubernetes rolling update strategy:
 
@@ -172,9 +163,7 @@ Application remains available at all times
 
 No service interruption during updates
 
-
-
-🔐 Secrets Configuration
+Secrets Configuration
 
 Store sensitive data securely:
 
@@ -192,17 +181,17 @@ Kubernetes Secrets
 
 
 
-📈 Future Improvements
+Future Improvements
 
-🔧 Add Horizontal Pod Autoscaling
+Add Horizontal Pod Autoscaling
 
-📊 Integrate monitoring (Prometheus & Grafana)
+Integrate monitoring (Prometheus & Grafana)
 
-🔐 Implement HTTPS with Ingress
+Implement HTTPS with Ingress
 
-🚀 Deploy on cloud (AWS EKS / GCP GKE)
+Deploy on cloud (AWS EKS / GCP GKE)
 
-👨‍💻 Project Details
+Project Details
 
 
 Division: D2
@@ -215,7 +204,7 @@ Subject: DevOps
 
 
 
-👥 Team Members
+Team Members
 
 Sr No	Name	Enrollment Number
 
@@ -231,7 +220,7 @@ Sr No	Name	Enrollment Number
   
 
 
-🏫 Institution
+Institution
 
 Medicaps University
 
