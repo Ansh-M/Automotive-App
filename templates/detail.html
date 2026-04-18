@@ -70,18 +70,18 @@
       grid-template-columns: 1fr 1fr;
       gap: 60px;
       margin-bottom: 60px;
-      align-items: center;
+      align-items: start;
     }
 
     .detail-visual {
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: transparent;
       border-radius: 16px;
-      padding: 48px 32px;
+      padding: 0;
       position: relative;
       overflow: hidden;
       opacity: 0;
       animation: fadeUp 0.6s ease 0.2s forwards;
+      height: 420px;
     }
     .detail-visual::before {
       content: '';
@@ -92,15 +92,6 @@
       width: 100%; height: auto;
       filter: drop-shadow(0 30px 50px rgba(0,0,0,0.6));
       position: relative; z-index: 1;
-    }
-    .detail-badge {
-      position: absolute; top: 20px; left: 20px;
-      font-family: 'Space Mono', monospace; font-size: 10px;
-      letter-spacing: 2px; text-transform: uppercase;
-      padding: 6px 12px; border-radius: 4px;
-      background: rgba(232,255,0,0.12);
-      color: var(--accent);
-      border: 1px solid rgba(232,255,0,0.25);
     }
     .detail-year {
       position: absolute; bottom: 20px; right: 20px;
@@ -216,8 +207,7 @@
     /* BOOK TEST DRIVE SECTION */
     .booking-section {
       opacity: 0; animation: fadeUp 0.6s ease 0.65s forwards;
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: transparent;
       border-radius: 16px;
       padding: 40px;
       position: relative; overflow: hidden;
@@ -315,8 +305,21 @@
 
   <div class="detail-hero">
     <!-- VISUAL -->
-    <div class="detail-visual">
-      {% if car.category == 'Sports' %}
+    <div class="detail-visual" id="visual-wrap">
+
+      <!-- AI Image (loaded async after page load) -->
+      <div id="blur-bg"></div>
+      <div id="ai-loader" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:2;">
+        <div class="ai-spinner"></div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">Loading image...</div>
+      </div>
+
+      <img id="ai-img" src="" alt="{{ car.name }}"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transition:opacity 0.6s;display:none;z-index:1;"/>
+
+      <!-- SVG fallback (shown only if image fails) -->
+      <div id="svg-fallback" style="display:none;width:100%;padding:48px 32px;">
+        {% if car.category == 'Sports' %}
       <svg class="detail-car-svg" viewBox="0 0 500 220" fill="none" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="250" cy="195" rx="220" ry="15" fill="rgba(0,0,0,0.5)"/>
         <path d="M50 138 L100 88 L175 62 L325 62 L400 88 L450 138 L450 162 L50 162 Z" fill="#1C2A1C"/>
@@ -407,8 +410,8 @@
         <path d="M444 142 L468 142" stroke="rgba(255,80,0,0.5)" stroke-width="3" stroke-linecap="round"/>
       </svg>
       {% endif %}
-      <div class="detail-badge">{{ car.badge }}</div>
-      <div class="detail-year">{{ car.year }}</div>
+      </div>
+
     </div>
 
     <!-- INFO -->
@@ -480,7 +483,6 @@
 
 <footer>
   <div class="footer-logo">AUTO<span>VERSE</span></div>
-  <div class="footer-tag">// DEVOPS PROJECT — DO-16 · GROUP 04D2</div>
 </footer>
 
 <script>
@@ -494,6 +496,54 @@
     document.querySelector('.booking-btn').style.display = 'none';
     document.getElementById('successMsg').style.display = 'block';
   }
+</script>
+
+<style>
+  #visual-wrap { position: relative; overflow: hidden; min-height: 380px; }
+  #blur-bg { position:absolute;inset:0;width:100%;height:100%;background-size:cover;background-position:center;filter:blur(28px) brightness(0.25) saturate(1.4);transform:scale(1.15);z-index:0;display:none; -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 18%, black 78%, transparent 100%), linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%); -webkit-mask-composite:destination-in; mask-image:linear-gradient(to bottom, transparent 0%, black 18%, black 78%, transparent 100%), linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%); mask-composite:intersect; }
+  .ai-spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script>
+  (function () {
+    var carId = {{ car.id }};
+    var img    = document.getElementById('ai-img');
+    var loader = document.getElementById('ai-loader');
+    var svg    = document.getElementById('svg-fallback');
+
+    function showSVG() {
+      loader.style.display = 'none';
+      svg.style.display = 'block';
+    }
+
+    // Timeout — show SVG if no image after 90s
+    var timeout = setTimeout(showSVG, 90000);
+
+    // Point img.src directly at our Flask proxy endpoint
+    // Flask fetches from Unsplash server-side — no CORS/ORB issues
+    img.style.display = 'block';
+    img.onload = function() {
+      clearTimeout(timeout);
+      loader.style.display = 'none';
+      img.style.opacity = '1';
+      var blurBg = document.getElementById('blur-bg');
+      blurBg.style.backgroundImage = 'url(' + img.src + ')';
+      blurBg.style.display = 'block';
+      document.getElementById('visual-wrap').classList.add('has-image');
+    };
+    img.onerror = function() {
+      clearTimeout(timeout);
+      showSVG();
+    };
+    img.src = '/api/generate-image/' + carId;
+  })();
 </script>
 </body>
 </html>

@@ -455,7 +455,9 @@
 
 <nav>
   <a href="/" class="nav-logo">AUTO<span>VERSE</span></a>
-  <span class="nav-tag">// PRECISION ENGINEERED</span>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="/search" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);text-decoration:none;padding:8px 18px;border:1px solid var(--accent);border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(232,255,0,0.1)'" onmouseout="this.style.background='none'">✦ AI SEARCH</a>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -507,6 +509,11 @@
         <button class="filter-btn" onclick="setFilter('{{ cat }}', this)">{{ cat }}</button>
         {% endfor %}
       </div>
+      <div class="filter-tabs" style="margin-top:10px;">
+        <button class="filter-btn active" onclick="setOrigin('all', this)">&#127758; All Origins</button>
+        <button class="filter-btn" onclick="setOrigin('india', this)">&#127470;&#127475; India</button>
+        <button class="filter-btn" onclick="setOrigin('global', this)">&#127760; Global</button>
+      </div>
     </div>
   </div>
 
@@ -514,6 +521,7 @@
     {% for car in cars %}
     <a href="/car/{{ car.id }}" class="car-card car-{{ car.category|lower }}"
        data-category="{{ car.category }}"
+       data-origin="{{ car.origin }}"
        data-name="{{ car.name|lower }}"
        data-brand="{{ car.brand|lower }}"
        style="animation-delay: {{ loop.index0 * 0.07 }}s">
@@ -648,15 +656,22 @@
 
 <footer>
   <div class="footer-logo">AUTO<span>VERSE</span></div>
-  <div class="footer-tag">// DEVOPS PROJECT — DO-16 · GROUP 04D2</div>
 </footer>
 
 <script>
   let activeFilter = 'All';
+  let activeOrigin = 'all';
 
   function setFilter(cat, btn) {
     activeFilter = cat;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.closest('.filter-tabs').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCars();
+  }
+
+  function setOrigin(origin, btn) {
+    activeOrigin = origin;
+    btn.closest('.filter-tabs').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     filterCars();
   }
@@ -668,8 +683,9 @@
 
     cards.forEach((card, i) => {
       const catMatch = activeFilter === 'All' || card.dataset.category === activeFilter;
+      const originMatch = activeOrigin === 'all' || card.dataset.origin === activeOrigin;
       const searchMatch = !search || card.dataset.name.includes(search) || card.dataset.brand.includes(search);
-      const show = catMatch && searchMatch;
+      const show = catMatch && originMatch && searchMatch;
       card.style.display = show ? 'block' : 'none';
       if (show) {
         card.style.animationDelay = (visible * 0.06) + 's';

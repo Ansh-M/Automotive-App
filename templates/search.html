@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Search — AutoVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080A0E; --surface: #0F1218; --card: #13161D;
+      --border: #1E2330; --accent: #E8FF00; --accent2: #FF4D00;
+      --text: #F0F2F5; --muted: #5A6070; --subtle: #2A2F3D;
+    }
+
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+      background: rgba(8,10,14,0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: var(--accent); text-decoration: none; }
+    .nav-logo span { color: var(--text); }
+    .back-btn {
+      font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; padding: 8px 16px;
+      border: 1px solid var(--border); border-radius: 6px; transition: all 0.2s;
+    }
+    .back-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* WRAPPER */
+    .wrapper { padding: 100px 48px 80px; max-width: 900px; margin: 0 auto; }
+
+    /* HEADER */
+    .page-label { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; letter-spacing: 2px; line-height: 1; margin-bottom: 10px; }
+    .page-sub { color: var(--muted); font-size: 15px; margin-bottom: 40px; }
+
+    /* SEARCH BOX */
+    .search-wrap {
+      display: flex; gap: 10px; margin-bottom: 24px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 8px 8px 8px 20px; transition: border-color 0.2s;
+    }
+    .search-wrap:focus-within { border-color: var(--accent); }
+    .search-wrap input {
+      flex: 1; background: none; border: none; outline: none;
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px;
+    }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-btn {
+      background: var(--accent); color: #000; border: none;
+      font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.2s;
+    }
+    .search-btn:hover { background: #d4e800; transform: translateY(-1px); }
+
+    /* SUGGESTIONS */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 48px; align-items: center; }
+    .chip-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+    .chip {
+      font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px;
+      cursor: pointer; transition: all 0.2s; background: none;
+    }
+    .chip:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* STATES */
+    #loading { display: none; text-align: center; padding: 60px 0; }
+    .spinner { width: 44px; height: 44px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    .spinner-text { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+
+    #error { display: none; text-align: center; padding: 48px 0; font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent2); }
+
+    #results { display: none; }
+    .results-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; }
+
+    /* RESULT CARD */
+    .result-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden; margin-bottom: 24px;
+      display: grid; grid-template-columns: 360px 1fr;
+      transition: border-color 0.3s;
+    }
+    .result-card:hover { border-color: var(--accent); }
+
+    .card-image {
+      position: relative; background: var(--surface);
+      display: flex; align-items: center; justify-content: center; min-height: 260px;
+    }
+    .card-image img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s; display: none; }
+    .img-loader {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    }
+    .img-spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .img-spinner-text { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+
+    .card-info { padding: 28px 28px 24px; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-badge { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .card-name { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 2px; line-height: 1; margin-bottom: 8px; }
+    .card-desc { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+
+    .specs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .spec { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; }
+    .spec-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+    .spec-value { font-size: 13px; font-weight: 600; }
+
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .card-price { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); letter-spacing: 1px; }
+    .card-link {
+      font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: #000; background: var(--accent); text-decoration: none;
+      padding: 10px 18px; border-radius: 6px; font-weight: 700; transition: all 0.2s;
+    }
+    .card-link:hover { background: #d4e800; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .wrapper { padding: 90px 20px 60px; }
+      .page-title { font-size: 40px; }
+      .result-card { grid-template-columns: 1fr; }
+      .card-image { min-height: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">AUTO<span>VERSE</span></a>
+  <a href="/" class="back-btn">← Catalog</a>
+</nav>
+
+<div class="wrapper">
+  <div class="page-label">✦ AI-Powered Search</div>
+  <h1 class="page-title">Find Any Car</h1>
+  <p class="page-sub">Search by name, brand, or category — get specs + an AI-generated image instantly.</p>
+
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Try: BMW, Tata Nexon, Electric, SUV..." autocomplete="off"/>
+    <button class="search-btn" onclick="doSearch()">Search</button>
+  </div>
+
+  <div class="chips">
+    <span class="chip-label">Try:</span>
+    {% for chip in ['BMW', 'Mahindra', 'Electric', 'Tata', 'SUV', 'Porsche', 'Maruti', 'Luxury'] %}
+    <button class="chip" onclick="quickSearch('{{ chip }}')">{{ chip }}</button>
+    {% endfor %}
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="spinner-text">Searching catalog...</div>
+  </div>
+
+  <div id="error"></div>
+
+  <div id="results">
+    <div class="results-label" id="results-label"></div>
+    <div id="results-list"></div>
+  </div>
+</div>
+
+<script>
+  var searchInput = document.getElementById('searchInput');
+
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  function quickSearch(term) {
+    searchInput.value = term;
+    doSearch();
+  }
+
+  function doSearch() {
+    var q = searchInput.value.trim();
+    if (!q) return;
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('error').style.display = 'none';
+    document.getElementById('results-list').innerHTML = '';
+
+    fetch('/api/search?q=' + encodeURIComponent(q))
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+      .then(function(res) {
+        document.getElementById('loading').style.display = 'none';
+        if (!res.ok || res.data.error) {
+          document.getElementById('error').textContent = res.data.error || 'Something went wrong.';
+          document.getElementById('error').style.display = 'block';
+          return;
+        }
+        renderResults(res.data, q);
+      })
+      .catch(function() {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').textContent = 'Network error. Please try again.';
+        document.getElementById('error').style.display = 'block';
+      });
+  }
+
+  function renderResults(cars, query) {
+    document.getElementById('results-label').textContent =
+      cars.length + ' result' + (cars.length > 1 ? 's' : '') + ' for "' + query + '"';
+    var list = document.getElementById('results-list');
+
+    cars.forEach(function(car) {
+      var card = document.createElement('div');
+      card.className = 'result-card';
+      card.innerHTML =
+        '<div class="card-image">' +
+          '<div class="img-loader" id="loader-' + car.id + '">' +
+            '<div class="img-spinner"></div>' +
+            '<div class="img-spinner-text">Loading image...</div>' +
+          '</div>' +
+          '<img id="img-' + car.id + '" src="" alt="' + car.name + '"/>' +
+          '</div>' +
+        '<div class="card-info">' +
+          '<div>' +
+            '<div class="card-badge">' + car.badge + ' · ' + (car.origin === 'india' ? '🇮🇳 India' : '🌍 Global') + '</div>' +
+            '<div class="card-name">' + car.name + '</div>' +
+            '<div class="card-desc">' + car.description + '</div>' +
+            '<div class="specs">' +
+              '<div class="spec"><div class="spec-label">Engine</div><div class="spec-value">' + car.engine + '</div></div>' +
+              '<div class="spec"><div class="spec-label">Power</div><div class="spec-value">' + car.horsepower + '</div></div>' +
+              '<div class="spec"><div class="spec-label">0–100 km/h</div><div class="spec-value">' + car.acceleration + '</div></div>' +
+              '<div class="spec"><div class="spec-label">Top Speed</div><div class="spec-value">' + car.top_speed + '</div></div>' +
+              '<div class="spec"><div class="spec-label">Fuel</div><div class="spec-value">' + car.fuel_type + '</div></div>' +
+              '<div class="spec"><div class="spec-label">Drive</div><div class="spec-value">' + car.drivetrain + '</div></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="card-footer">' +
+            '<div class="card-price">' + car.price + '</div>' +
+            '<a href="/car/' + car.id + '" class="card-link">Full Details →</a>' +
+          '</div>' +
+        '</div>';
+
+      list.appendChild(card);
+      fetchImage(car.id);  // trigger AI image generation async
+    });
+
+    document.getElementById('results').style.display = 'block';
+  }
+
+  function fetchImage(carId) {
+    var loader = document.getElementById('loader-' + carId);
+    var img    = document.getElementById('img-' + carId);
+    if (!img) return;
+    img.style.display = 'block';
+    img.onload = function() {
+      if (loader) loader.style.display = 'none';
+      img.style.opacity = '1';
+    };
+    img.onerror = function() {
+      if (loader) loader.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:20px;text-align:center;">Image unavailable</div>';
+    };
+    img.src = '/api/generate-image/' + carId;
+  }
+</script>
+</body>
+</html>
