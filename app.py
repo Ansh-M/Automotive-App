@@ -1,3 +1,5 @@
+import os
+from tavily import TavilyClient
 from flask import Flask, render_template, request, jsonify, Response
 import requests as http_requests
 from data.cars import CARS
@@ -83,9 +85,20 @@ def api_search():
     scored.sort(key=lambda x: x["match_score"], reverse=True)
 
     if not scored:
-        return jsonify({
-            "error": f'No results for "{query}". Try: BMW, Tata, Mahindra, SUV, Electric...'
-        }), 404
+        try:
+            api_key = os.environ.get("TAVILY_API_KEY")
+            if not api_key:
+                raise ValueError("Tavily key not set")
+            tavily = TavilyClient(api_key=api_key)
+            results = tavily.search(query=f"{query} car specs price India")
+            return jsonify({
+                "source": "tavily",
+                "results": results["results"][:3]
+            })
+        except Exception as e:
+            return jsonify({
+                "error": f'No results for "{query}". Try: BMW, Tata, Mahindra, SUV, Electric...'
+            }), 404
 
     return jsonify(scored[:3])
 
