@@ -4,7 +4,7 @@ from data.cars import CARS
 from services.image_service import get_car_search_term, get_wiki_image_url
 
 
-# v2 - automated deploy
+# v2- automated deploy
 app = Flask(__name__)
 
 
