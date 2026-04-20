@@ -3,6 +3,8 @@ import requests as http_requests
 from data.cars import CARS
 from services.image_service import get_car_search_term, get_wiki_image_url
 
+# v2 - automated deploy
+
 app = Flask(__name__)
 
 
@@ -117,4 +119,3 @@ def api_generate_image(car_id):
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
-# v2 - automated deploy
