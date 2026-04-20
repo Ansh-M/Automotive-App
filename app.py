@@ -95,7 +95,7 @@ def api_search():
                 "source": "tavily",
                 "results": results["results"][:3]
             })
-        except Exception as e:
+        except Exception:
             return jsonify({
                 "error": f'No results for "{query}". Try: BMW, Tata, Mahindra, SUV, Electric...'
             }), 404
