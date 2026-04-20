@@ -199,7 +199,12 @@
           document.getElementById('error').style.display = 'block';
           return;
         }
-        renderResults(res.data, q);
+        
+        if (res.data.source === 'tavily') {
+          renderTavilyResults(res.data.results, q);
+        } else {
+          renderResults(res.data, q);
+        }
       })
       .catch(function() {
         document.getElementById('loading').style.display = 'none';
@@ -265,6 +270,33 @@
     };
     img.src = '/api/generate-image/' + carId;
   }
+
+  function renderTavilyResults(results, query) {
+  document.getElementById('results-label').textContent =
+    results.length + ' web result' + (results.length > 1 ? 's' : '') + ' for "' + query + '"';
+  var list = document.getElementById('results-list');
+
+  results.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'result-card';
+    card.style.gridTemplateColumns = '1fr';
+    card.innerHTML =
+      '<div class="card-info">' +
+        '<div>' +
+          '<div class="card-badge">🌐 WEB RESULT · TAVILY AI</div>' +
+          '<div class="card-name" style="font-size:24px">' + item.title + '</div>' +
+          '<div class="card-desc">' + (item.content || 'No description available.') + '</div>' +
+        '</div>' +
+        '<div class="card-footer">' +
+          '<a href="' + item.url + '" target="_blank" class="card-link">View Source →</a>' +
+        '</div>' +
+      '</div>';
+    list.appendChild(card);
+  });
+
+  document.getElementById('results').style.display = 'block';
+}
+
 </script>
 </body>
 </html>
