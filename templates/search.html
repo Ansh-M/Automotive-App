@@ -250,26 +250,35 @@
         '</div>';
 
       list.appendChild(card);
-      fetchImage(car.id);  // trigger AI image generation async
+      fetchImage(car); 
     });
 
     document.getElementById('results').style.display = 'block';
   }
 
-  function fetchImage(carId) {
-    var loader = document.getElementById('loader-' + carId);
-    var img    = document.getElementById('img-' + carId);
+  function fetchImage(car) {
+    var loader = document.getElementById('loader-' + car.id);
+    var img = document.getElementById('img-' + car.id);
     if (!img) return;
     img.style.display = 'block';
     img.onload = function() {
-      if (loader) loader.style.display = 'none';
-      img.style.opacity = '1';
+        if (loader) loader.style.display = 'none';
+        img.style.opacity = '1';
     };
     img.onerror = function() {
-      if (loader) loader.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:20px;text-align:center;">Image unavailable</div>';
+        if (loader) loader.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:20px;text-align:center;">Image unavailable</div>';
     };
-    img.src = '/api/generate-image/' + carId;
-  }
+
+    // If Groq result (id=9999), use name-based endpoint
+    if (car.id === 9999) {
+        img.src = '/api/generate-image-by-name?name=' + encodeURIComponent(car.name) +
+                  '&brand=' + encodeURIComponent(car.brand) +
+                  '&category=' + encodeURIComponent(car.category);
+    } else {
+        img.src = '/api/generate-image/' + car.id;
+    }
+}
+
 
   function renderTavilyResults(results, query) {
   document.getElementById('results-label').textContent =

@@ -1,5 +1,6 @@
 import os
 from tavily import TavilyClient
+from groq import Groq
 from flask import Flask, render_template, request, jsonify, Response
 import requests as http_requests
 from data.cars import CARS
@@ -91,6 +92,11 @@ def api_search():
                 raise ValueError("Tavily key not set")
             tavily = TavilyClient(api_key=api_key)
             results = tavily.search(query=f"{query} car specs price India")
+            
+            structured = structure_with_groq(results["results"])
+            if structured:
+                return jsonify(structured)
+
             return jsonify({
                 "source": "tavily",
                 "results": results["results"][:3]
@@ -127,6 +133,73 @@ def api_generate_image(car_id):
             return Response(resp.content, content_type=content_type)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    
+
+@app.route("/api/generate-image-by-name")
+def api_generate_image_by_name():
+    name = request.args.get("name", "").strip()
+    brand = request.args.get("brand", "").strip()
+    category = request.args.get("category", "").strip()
+    if not name:
+        return jsonify({"error": "No name provided"}), 400
+    search_term = get_car_search_term(name, brand, category)
+    try:
+        with http_requests.Session() as session:
+            image_url = get_wiki_image_url(search_term, session)
+            if not image_url:
+                return jsonify({"error": "No image found"}), 404
+            resp = session.get(image_url, timeout=10, headers={"User-Agent": "AutoverseApp/1.0"})
+            content_type = resp.headers.get("Content-Type", "image/jpeg")
+            return Response(resp.content, content_type=content_type)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def structure_with_groq(raw_results):
+    try:
+        api_key = os.environ.get("GROQ_API_KEY")
+            
+        if not api_key:
+            return None
+            
+        client = Groq(api_key=api_key)
+        content = "\n".join([r.get("content", "") for r in raw_results])
+        prompt = f""" You are a car data extractor. Based on this web content, 
+        extract car information and return ONLY a JSON array with this exact structure, 
+        no explanation:
+        [{{
+            "id": 9999,
+            "name": "Full Car Name",
+            "brand": "Brand",
+            "badge": "CATEGORY",
+            "category": "SUV/Sedan/Hatchback/etc",
+            "origin": "india or global",
+            "description": "2 sentence description",
+            "engine": "engine spec",
+            "horsepower": "XXX hp",
+            "acceleration": "X.X s",
+            "top_speed": "XXX km/h",
+            "fuel_type": "Petrol/Diesel/Electric",
+            "drivetrain": "FWD/RWD/AWD",
+            "price": "₹XX.XX Lakh"      
+        }}]
+
+        Web content: {content}
+        """
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1
+        )
+        
+        import json
+        text = response.choices[0].message.content.strip()
+        text = text.replace("```json", "").replace("```", "").strip()
+        return json.loads(text)
+        
+    except Exception:
+        return None
 
 
 if __name__ == "__main__":
