@@ -24,22 +24,15 @@ spec:
           image: 'anshmundra/automotive-app:latest'
           ports:
             - containerPort: 5000
+          env:
+            - name: TAVILY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: autoverse-secrets
+                  key: TAVILY_API_KEY
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: autoverse-secrets
+                  key: GROQ_API_KEY
           readinessProbe:
-            httpGet:
-              path: /
-              port: 5000
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 5000
-            initialDelaySeconds: 15
-            periodSeconds: 20
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 256Mi
