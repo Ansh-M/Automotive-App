@@ -182,6 +182,8 @@ def structure_with_groq(raw_results):
         content = "\n".join([r.get("content", "") for r in raw_results[:3]]) 
         prompt = f"""You are a car data extractor. Based on this web content, extract car information.
             If a spec is not found in the content, make a reasonable estimate based on the car model.
+            DO NOT invent or hallucinate car names or specs.
+            Only extract the single most prominent car mentioned.
             Return ONLY a JSON array, no explanation:
             [{{
                 "id": 9999,
