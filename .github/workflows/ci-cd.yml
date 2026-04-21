@@ -61,7 +61,6 @@ jobs:
               --name autoverse \
               --restart unless-stopped \
               -p 80:5000 \
-              -e TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }} \
               anshmundra/automotive-app:latest
 
 
