@@ -147,15 +147,26 @@ def api_generate_image_by_name():
     category = request.args.get("category", "").strip()
     if not name:
         return jsonify({"error": "No name provided"}), 400
-    search_term = get_car_search_term(name, brand, category)
+    
+    # Try multiple search terms
+    search_terms = [
+        name,                           
+        f"{brand} {name}",              
+        name.split()[-1],               
+        get_car_search_term(name, brand, category)
+    ]
+    
     try:
         with http_requests.Session() as session:
-            image_url = get_wiki_image_url(search_term, session)
-            if not image_url:
-                return jsonify({"error": "No image found"}), 404
-            resp = session.get(image_url, timeout=10, headers={"User-Agent": "AutoverseApp/1.0"})
-            content_type = resp.headers.get("Content-Type", "image/jpeg")
-            return Response(resp.content, content_type=content_type)
+            for term in search_terms:
+                image_url = get_wiki_image_url(term, session)
+                if image_url:
+                    resp = session.get(image_url, timeout=10, 
+                                      headers={"User-Agent": "AutoverseApp/1.0"})
+                    content_type = resp.headers.get("Content-Type", "image/jpeg")
+                    if content_type.startswith("image/"):
+                        return Response(resp.content, content_type=content_type)
+            return jsonify({"error": "No image found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -168,7 +179,7 @@ def structure_with_groq(raw_results):
             return None
             
         client = Groq(api_key=api_key)
-        content = "\n".join([r.get("content", "") for r in raw_results])
+        content = "\n".join([r.get("content", "") for r in raw_results[:3]]) 
         prompt = f"""You are a car data extractor. Based on this web content, extract car information.
             If a spec is not found in the content, make a reasonable estimate based on the car model.
             Return ONLY a JSON array, no explanation:
