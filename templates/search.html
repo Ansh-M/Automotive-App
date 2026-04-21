@@ -218,47 +218,48 @@
       cars.length + ' result' + (cars.length > 1 ? 's' : '') + ' for "' + query + '"';
     var list = document.getElementById('results-list');
 
-    cars.forEach(function(car) {
-      var card = document.createElement('div');
-      card.className = 'result-card';
-      card.innerHTML =
-        '<div class="card-image">' +
-          '<div class="img-loader" id="loader-' + car.id + '">' +
-            '<div class="img-spinner"></div>' +
-            '<div class="img-spinner-text">Loading image...</div>' +
-          '</div>' +
-          '<img id="img-' + car.id + '" src="" alt="' + car.name + '"/>' +
-          '</div>' +
-        '<div class="card-info">' +
-          '<div>' +
-            '<div class="card-badge">' + car.badge + ' · ' + (car.origin === 'india' ? '🇮🇳 India' : '🌍 Global') + '</div>' +
-            '<div class="card-name">' + car.name + '</div>' +
-            '<div class="card-desc">' + car.description + '</div>' +
-            '<div class="specs">' +
-              '<div class="spec"><div class="spec-label">Engine</div><div class="spec-value">' + car.engine + '</div></div>' +
-              '<div class="spec"><div class="spec-label">Power</div><div class="spec-value">' + car.horsepower + '</div></div>' +
-              '<div class="spec"><div class="spec-label">0–100 km/h</div><div class="spec-value">' + car.acceleration + '</div></div>' +
-              '<div class="spec"><div class="spec-label">Top Speed</div><div class="spec-value">' + car.top_speed + '</div></div>' +
-              '<div class="spec"><div class="spec-label">Fuel</div><div class="spec-value">' + car.fuel_type + '</div></div>' +
-              '<div class="spec"><div class="spec-label">Drive</div><div class="spec-value">' + car.drivetrain + '</div></div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="card-footer">' +
-            '<div class="card-price">' + car.price + '</div>' +
-            '<a href="/car/' + car.id + '" class="card-link">Full Details →</a>' +
-          '</div>' +
-        '</div>';
+    cars.forEach(function(car, index) {
+  var uid = car.id === 9999 ? ('groq-' + index) : car.id;
+  var card = document.createElement('div');
+  card.className = 'result-card';
+  card.innerHTML =
+    '<div class="card-image">' +
+      '<div class="img-loader" id="loader-' + uid + '">' +
+        '<div class="img-spinner"></div>' +
+        '<div class="img-spinner-text">Loading image...</div>' +
+      '</div>' +
+      '<img id="img-' + uid + '" src="" alt="' + car.name + '"/>' +
+    '</div>' +
+    '<div class="card-info">' +
+      '<div>' +
+        '<div class="card-badge">' + car.badge + ' · ' + (car.origin === 'india' ? '🇮🇳 India' : '🌍 Global') + '</div>' +
+        '<div class="card-name">' + car.name + '</div>' +
+        '<div class="card-desc">' + car.description + '</div>' +
+        '<div class="specs">' +
+          '<div class="spec"><div class="spec-label">Engine</div><div class="spec-value">' + car.engine + '</div></div>' +
+          '<div class="spec"><div class="spec-label">Power</div><div class="spec-value">' + car.horsepower + '</div></div>' +
+          '<div class="spec"><div class="spec-label">0–100 km/h</div><div class="spec-value">' + car.acceleration + '</div></div>' +
+          '<div class="spec"><div class="spec-label">Top Speed</div><div class="spec-value">' + car.top_speed + '</div></div>' +
+          '<div class="spec"><div class="spec-label">Fuel</div><div class="spec-value">' + car.fuel_type + '</div></div>' +
+          '<div class="spec"><div class="spec-label">Drive</div><div class="spec-value">' + car.drivetrain + '</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-footer">' +
+        '<div class="card-price">' + car.price + '</div>' +
+        (car.id === 9999 ? '' : '<a href="/car/' + car.id + '" class="card-link">Full Details →</a>') +
+      '</div>' +
+    '</div>';
 
-      list.appendChild(card);
-      fetchImage(car); 
+  list.appendChild(card);
+  fetchImage(car, uid);
     });
 
     document.getElementById('results').style.display = 'block';
   }
 
-  function fetchImage(car) {
-    var loader = document.getElementById('loader-' + car.id);
-    var img = document.getElementById('img-' + car.id);
+  function fetchImage(car, uid) {
+    var loader = document.getElementById('loader-' + uid);
+    var img = document.getElementById('img-' + uid);
     if (!img) return;
     img.style.display = 'block';
     img.onload = function() {
@@ -268,8 +269,6 @@
     img.onerror = function() {
         if (loader) loader.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:20px;text-align:center;">Image unavailable</div>';
     };
-
-    // If Groq result (id=9999), use name-based endpoint
     if (car.id === 9999) {
         img.src = '/api/generate-image-by-name?name=' + encodeURIComponent(car.name) +
                   '&brand=' + encodeURIComponent(car.brand) +

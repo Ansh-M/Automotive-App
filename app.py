@@ -91,7 +91,11 @@ def api_search():
             if not api_key:
                 raise ValueError("Tavily key not set")
             tavily = TavilyClient(api_key=api_key)
-            results = tavily.search(query=f"{query} car specs price India")
+            results = tavily.search(
+                query=f"{query} car engine specs horsepower price India",
+                search_depth="advanced",
+                max_results=5
+            )
             
             structured = structure_with_groq(results["results"])
             if structured:
@@ -134,7 +138,7 @@ def api_generate_image(car_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    
+
 
 @app.route("/api/generate-image-by-name")
 def api_generate_image_by_name():
@@ -165,28 +169,29 @@ def structure_with_groq(raw_results):
             
         client = Groq(api_key=api_key)
         content = "\n".join([r.get("content", "") for r in raw_results])
-        prompt = f""" You are a car data extractor. Based on this web content, 
-        extract car information and return ONLY a JSON array with this exact structure, 
-        no explanation:
-        [{{
-            "id": 9999,
-            "name": "Full Car Name",
-            "brand": "Brand",
-            "badge": "CATEGORY",
-            "category": "SUV/Sedan/Hatchback/etc",
-            "origin": "india or global",
-            "description": "2 sentence description",
-            "engine": "engine spec",
-            "horsepower": "XXX hp",
-            "acceleration": "X.X s",
-            "top_speed": "XXX km/h",
-            "fuel_type": "Petrol/Diesel/Electric",
-            "drivetrain": "FWD/RWD/AWD",
-            "price": "₹XX.XX Lakh"      
-        }}]
+        prompt = f"""You are a car data extractor. Based on this web content, extract car information.
+            If a spec is not found in the content, make a reasonable estimate based on the car model.
+            Return ONLY a JSON array, no explanation:
+            [{{
+                "id": 9999,
+                "name": "Full Car Name",
+                "brand": "Brand",
+                "badge": "CATEGORY",
+                "category": "SUV/Sedan/Hatchback/etc",
+                "origin": "india or global",
+                "description": "2 sentence description about this specific car",
+                "engine": "e.g. 1.5L Turbo Petrol",
+                "horsepower": "e.g. 150 hp",
+                "acceleration": "e.g. 8.5 s",
+                "top_speed": "e.g. 180 km/h",
+                "fuel_type": "Petrol/Diesel/Electric/Hybrid",
+                "drivetrain": "FWD/RWD/AWD",
+                "price": "e.g. ₹10.69 "
+            }}]
 
-        Web content: {content}
-        """
+            Web content:
+            {content}
+            """
         response = client.chat.completions.create(
             model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": prompt}],
